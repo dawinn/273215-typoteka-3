@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ольга Карпик](https://up.htmlacademy.ru/nodejs/3/user/273215).
-* Наставник: `Неизвестно`.
+* Наставник: [Вадим Шевяков](https://up.htmlacademy.ru/nodejs/3/user/574589).
 
 ---
 
