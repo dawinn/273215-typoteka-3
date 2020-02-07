@@ -69,13 +69,18 @@ const CATEGORIES = [
 
 const generatePublications = (count) => {
   const currentDate = new Date();
-  return Array(count).fill({}).map(() => ({
-    title: TITLES[getRandomInt(0, TITLES.length - 1)],
-    announce: shuffle(ANNOUNCE).slice(1, 5).join(` `),
-    fullText: shuffle(ANNOUNCE).slice(1, getRandomInt(0, ANNOUNCE.length - 1)).join(` `),
-    createdDate: dateFormat((getRandomInt((new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, currentDate.getDate())), currentDate.getTime())), `%Y-%m-%d %H:%M:%S`),
-    category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
-  }));
+  const threeMonthAgo = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, currentDate.getDate());
+  return Array(count).fill({}).map(() => {
+      const randomDate = dateFormat((getRandomInt(threeMonthAgo.getTime(), currentDate.getTime())), `%Y-%m-%d %H:%M:%S`);
+
+      return {
+        title: TITLES[getRandomInt(0, TITLES.length - 1)],
+        announce: shuffle(ANNOUNCE).slice(0, 5).join(` `),
+        fullText: shuffle(ANNOUNCE).slice(0, getRandomInt(0, ANNOUNCE.length - 1)).join(` `),
+        createdDate: randomDate,
+        category: [shuffle(CATEGORIES).slice(0, getRandomInt(0, CATEGORIES.length - 1))],
+      };
+  });
 };
 
 module.exports = {
