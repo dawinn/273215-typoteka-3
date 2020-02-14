@@ -5,6 +5,7 @@ const {
   shuffle,
   dateFormat
 } = require(`../../utils`);
+const chalk = require(`chalk`);
 
 // Подключаем модуль `fs`
 const fs = require(`fs`);
@@ -85,22 +86,26 @@ const generatePublications = (count) => {
 
 module.exports = {
   name: `--generate`,
-  run(args) {
+  async run(args) {
     const [count] = args;
     const countPublication = Number.parseInt(count, 10) || DEFAULT_COUNT;
+
     if (countPublication > COUNT_MAX) {
-      console.error(`Не больше ${COUNT_MAX} публикаций`);
+      console.error(chalk.red(`Не больше ${COUNT_MAX} публикаций`));
       return true;
     }
+
     const content = JSON.stringify(generatePublications(countPublication));
 
-    return fs.writeFile(FILE_NAME, content, (err) => {
-      if (err) {
-        console.error(`Can't write data to file...`);
-        return process.exit(ExitCode.error);
-      }
-      return console.info(`Operation success. File created.`);
-    });
+    try {
+      await fs.writeFile(FILE_NAME, content);
+      console.info(chalk.green(`Operation success. File created.`));
+    } catch  (err) {
+      console.error(chalk.red(`Can't write data to file...`));
+      return process.exit(ExitCode.error);
+    }
+
+    return true;
   }
 };
 
