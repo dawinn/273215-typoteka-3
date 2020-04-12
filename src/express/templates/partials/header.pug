@@ -1,0 +1,12 @@
+header.header
+  a.header__logo.logo(href='#')
+    img.logo__image(src='img/icons/logo-image-only.svg' alt='логотип Тайпотеки')
+    span.logo__name Типотека
+
+  if isNavBurger
+    include nav-burger.pug
+  else
+    include nav.pug
+
+  a.header__search.button.button--search(href='#' aria-label='поиск по сайту')
+
