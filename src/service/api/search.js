@@ -5,7 +5,7 @@ const {HttpCode} = require(`../../constants`);
 
 module.exports = (app, service) => {
   const route = new Router();
-  
+
   app.use(`/search`, route);
 
   route.get(`/`, (req, res) => {

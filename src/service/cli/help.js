@@ -1,9 +1,11 @@
 'use strict';
 const chalk = require(`chalk`);
+const {getLogger} = require(`../lib/logger`);
 
 module.exports = {
   name: `--help`,
   run() {
+    const logger = getLogger();
     const textHelp = `
     Программа запускает http-сервер и формирует файл с данными для API.
 
@@ -14,6 +16,6 @@ module.exports = {
     --help:               печатает этот текст
     --generate <count>    формирует файл mocks.json
   `;
-    console.info(chalk.gray(textHelp));
+    logger.info(chalk.gray(textHelp));
   }
 };

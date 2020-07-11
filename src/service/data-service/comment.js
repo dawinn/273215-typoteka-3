@@ -4,31 +4,31 @@ const {nanoid} = require(`nanoid`);
 const {MAX_ID_LENGTH} = require(`../../constants`);
 
 class CommentService {
-  create(offer, comment) {
+  create(article, comment) {
     const newComment = Object.assign({
       id: nanoid(MAX_ID_LENGTH),
     }, comment);
 
-    offer.comments.push(newComment);
-    return comment;
+    article.comments.push(newComment);
+    return newComment;
   }
 
-  drop(offer, commentId) {
-    const dropComment = offer.comments
+  drop(article, commentId) {
+    const dropComment = article.comments
     .find((item) => item.id === commentId);
 
     if (!dropComment) {
       return null;
     }
 
-    offer.comments = offer.comments
+    article.comments = article.comments
     .filter((item) => item.id !== commentId);
 
     return dropComment;
   }
 
-  findAll(offer) {
-    return offer.comments;
+  findAll(article) {
+    return article.comments;
   }
 
 }
