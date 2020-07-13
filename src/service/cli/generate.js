@@ -1,10 +1,13 @@
 'use strict';
 
 const {nanoid} = require(`nanoid`);
+const {getLogger} = require(`../lib/logger`);
+
 const {
   getRandomInt,
   shuffle,
-  dateFormat
+  dateFormat,
+  printNumWithLead0,
 } = require(`../../utils`);
 const chalk = require(`chalk`);
 
@@ -15,8 +18,10 @@ const {
   ExitCode,
   MAX_ID_LENGTH,
   MAX_COMMENTS,
+  PictureRestrict,
 } = require(`../../constants`);
 
+const logger = getLogger();
 const DEFAULT_COUNT = 1;
 const COUNT_MAX = 1000;
 const FILE_NAME = `mocks.json`;
@@ -31,7 +36,7 @@ const readContent = async (filePath) => {
     const content = await fs.readFile(filePath, `utf8`);
     return content.split(`\n`);
   } catch (err) {
-    console.error(chalk.red(err));
+    logger.error(chalk.red(err));
     return [];
   }
 };
@@ -45,6 +50,15 @@ const generateComments = (count, comments) => (
   }))
 );
 
+const getPictureFileName = (number) => {
+  const numWithLead0 = `${printNumWithLead0(number)}`;
+  return {
+    background: numWithLead0,
+    image: `item${numWithLead0}.jpg`,
+    image2x: `item${numWithLead0}@2x.jpg`
+  };
+};
+
 const generatePublications = (count, titles, categories, sentences, comments) => {
   const currentDate = new Date();
   const threeMonthAgo = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, currentDate.getDate());
@@ -55,6 +69,7 @@ const generatePublications = (count, titles, categories, sentences, comments) =>
         id: nanoid(MAX_ID_LENGTH),
         title: titles[getRandomInt(0, titles.length - 1)],
         comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
+        picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
         announce: shuffle(sentences).slice(0, 5).join(` `),
         fullText: shuffle(sentences).slice(0, getRandomInt(0, sentences.length - 1)).join(` `),
         createdDate: randomDate,
@@ -74,7 +89,7 @@ module.exports = {
     const countPublication = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
     if (countPublication > COUNT_MAX) {
-      console.error(chalk.red(`Не больше ${COUNT_MAX} публикаций`));
+      logger.error(chalk.red(`Не больше ${COUNT_MAX} публикаций`));
       return true;
     }
 
@@ -82,9 +97,9 @@ module.exports = {
 
     try {
       await fs.writeFile(FILE_NAME, content);
-      console.info(chalk.green(`Operation success. File created.`));
+      logger.info(chalk.green(`Operation success. File created.`));
     } catch  (err) {
-      console.error(chalk.red(`Can't write data to file...`));
+      logger.error(chalk.red(`Can't write data to file...`));
       return process.exit(ExitCode.error);
     }
 

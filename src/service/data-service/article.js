@@ -20,14 +20,13 @@ class ArticleService {
   }
 
   drop(id) {
-    const article = this._articles.find((item) => item.id === id);
-    const articleIndex = this._articles.indexOf(id);
-    if (!article) {
+    const articleIndex = this._articles.findIndex((item) => item.id === id);
+
+    if (!~articleIndex) {
       return null;
     }
 
-    this._articles = this._articles.splice(articleIndex, 1);
-    return article;
+    return this._articles.splice(articleIndex, 1);
   }
 
   findAll() {

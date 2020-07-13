@@ -4,8 +4,10 @@
   "description": "Типотека",
   "main": "./src/service/service.js",
   "scripts": {
-    "test": "npm run eslint",
+    "test": "npm run test::rest",
+    "test::rest": "jest",
     "start": "node ./src/service/service.js",
+    "start::debug": "LOG_LEVEL=debug node ./src/service/service.js --server | ./node_modules/.bin/pino-pretty",
     "start-front-server": "nodemon ./src/express/index.js",
     "server": "nodemon ./src/service/service.js --server",
     "eslint": "eslint --ext .js src/"
@@ -23,12 +25,17 @@
   "devDependencies": {
     "eslint": "6.8.0",
     "eslint-config-htmlacademy": "0.5.2",
-    "nodemon": "2.0.2"
+    "jest": "26.1.0",
+    "nodemon": "2.0.2",
+    "supertest": "4.0.2"
   },
   "dependencies": {
     "chalk": "3.0.0",
     "express": "4.17.1",
     "nanoid": "3.1.9",
+    "pino": "6.3.2",
+    "pino-multi-stream": "5.0.0",
+    "pino-pretty": "4.0.0",
     "pug": "2.0.4"
   }
 }

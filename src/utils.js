@@ -32,3 +32,5 @@ module.exports.dateFormat = (dateTime, strFormat) => {
     return ('0' + match).slice (-2);
   });
 };
+
+module.exports.printNumWithLead0 = (number) => number < 10 ? `0${number}` : number;
