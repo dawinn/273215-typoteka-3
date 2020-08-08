@@ -29,7 +29,11 @@ const incorrectNewArticle = {
   announce: `Аннотация к новому элементу`,
   fullText: `Первая большая ёлка была установлена только в 1938 году. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравится только игры. Собрать камни бесконечности легко, если вы прирожденный герой. Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Бороться и искать! Найти и... перепрятать Однажды тихой тёмной ночью... Или как-то раз мы с друзьями заблудились с пятнички на воскресенье Ёлки — это не просто красивое дерево. Это прочная древесина. Вы можете достичь всего. Стоит только немного постараться и запастись книгами. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Это один из лучших рок-музыкантов. `,
   createdDate: `2020-03-18 15:07:18`,
-  category: [`Деревья`]
+  picture: {
+    background: `11`,
+    image: `item11.jpg`,
+    image2x: `item11@2x.jpg`
+  },
 };
 
 beforeAll(async () => {
@@ -73,12 +77,14 @@ describe(`Article API end-to-end tests`, () => {
     expect(res.body).toHaveProperty(`title`);
   });
 
-  test(`When add incorrect offer, status code should be 400`, async () => {
+  test(`When add incorrect article, status code should be 400 & article wasn't create`, async () => {
+    const oldLength = mockData.length;
     const res = await request(server)
     .post(`/api/articles/`)
     .send(incorrectNewArticle);
 
     expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
+    expect(mockData.length).toBe(oldLength);
   });
 
   test(`When update offer, status code should be 200`, async () => {

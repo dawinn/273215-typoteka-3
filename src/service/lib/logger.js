@@ -20,7 +20,7 @@ const streams = [
   {level: `error`, stream: fs.createWriteStream(`./src/service/logs/errors.log`)},
 ];
 const logger = pinoms({
-  name: `buy&sell`,
+  name: `typoteka`,
   level
 }, pinoms.multistream(streams));
 
