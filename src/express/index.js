@@ -2,15 +2,19 @@
 
 const express = require(`express`);
 const path = require(`path`);
+const {getData} = require(`./request`);
+const {dateFormat} = require(`../utils`);
+
 const app = express();
-const offersRoutes = require(`./routes/articles`);
+const articlesRoutes = require(`./routes/articles`);
 const myRoutes = require(`./routes/my`);
 
 const PUBLIC_DIR = `public`;
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
+app.use(express.urlencoded({extended: false}));
 
 app.use(`/my`, myRoutes);
-app.use(`/offers`, offersRoutes);
+app.use(`/articles`, articlesRoutes);
 
 const port = 8080;
 app.listen(port);
@@ -18,8 +22,45 @@ app.listen(port);
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
 
-app.get(`/`, (req, res) => res.render(`main`));
+/* главная */
+app.get(`/`, async (req, res) => {
+  /*  получение данных */
+  const categoriesData = await getData(`/api/categories`);
+  const categories = categoriesData.map(item => ({
+    item,
+    count: 13
+  }));
+
+  const articles = await getData(`/api/articles`);
+
+  const populars = articles.map(item => ({
+    id: item.id,
+    text: item.announce,
+    count: item.comments.length,
+  }));
+  populars.length = 2;
+
+  const lastComments = {};//await getData(`/api/offers`);
+  lastComments.length = 4;
+
+  articles.length = 6;
+  res.render(`main`, {categories, articles, populars, lastComments});
+});
+
 app.get(`/categories`, (req, res) => res.render(`all-categories`, {isNavBurger: true}));
 app.get(`/register`, (req, res) => res.render(`sign-up`));
 app.get(`/login`, (req, res) => res.render(`login`));
-app.get(`/search`, (req, res) => res.render(`search-result`, {isNavBurger: true}));
+app.get(`/search`, async (req, res) => {
+  let searchResult = [];
+  if (req.query.query) {
+    const searchResultData = await getData(`/api${req.url}`);
+    searchResult = searchResultData && searchResultData.map(item => ({
+      id: item.id,
+      title: item.title.replace(req.query.query, `<b>${req.query.query}</b>`),
+      dateTime: dateFormat(Date.parse(item.createdDate), `%Y-%m-%dT%H:%M`),
+      dateView: dateFormat(Date.parse(item.createdDate), `%d.%m.%Y, %H:%M`),
+    }));
+  }
+
+  res.render(`search`, {isNavBurger: true, query: req.query.query, searchResult: searchResult || []});
+});
