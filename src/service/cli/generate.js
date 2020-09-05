@@ -7,7 +7,9 @@ const {
   getRandomInt,
   shuffle,
   dateFormat,
+  getRandomDate,
   printNumWithLead0,
+  readContentFile,
 } = require(`../../utils`);
 const chalk = require(`chalk`);
 
@@ -31,16 +33,6 @@ const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
-const readContent = async (filePath) => {
-  try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.split(`\n`);
-  } catch (err) {
-    logger.error(chalk.red(err));
-    return [];
-  }
-};
-
 const generateComments = (count, comments) => (
   Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
@@ -60,31 +52,29 @@ const getPictureFileName = (number) => {
 };
 
 const generatePublications = (count, titles, categories, sentences, comments) => {
-  const currentDate = new Date();
-  const threeMonthAgo = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, currentDate.getDate());
   return Array(count).fill({}).map(() => {
-      const randomDate = dateFormat((getRandomInt(threeMonthAgo.getTime(), currentDate.getTime())), `%Y-%m-%d %H:%M:%S`);
+    const randomDate = getRandomDate();
 
-      return {
-        id: nanoid(MAX_ID_LENGTH),
-        title: titles[getRandomInt(0, titles.length - 1)],
-        comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
-        picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
-        announce: shuffle(sentences).slice(0, 5).join(` `),
-        fullText: shuffle(sentences).slice(0, getRandomInt(0, sentences.length - 1)).join(` `),
-        createdDate: randomDate,
-        category: [categories[getRandomInt(0, categories.length - 1)]],
-      };
+    return {
+      id: nanoid(MAX_ID_LENGTH),
+      title: titles[getRandomInt(0, titles.length - 1)],
+      comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
+      picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
+      announce: shuffle(sentences).slice(0, 5).join(` `),
+      fullText: shuffle(sentences).slice(0, getRandomInt(0, sentences.length - 1)).join(` `),
+      createdDate: dateFormat(randomDate, `%Y-%m-%d %H:%M:%S`),
+      category: shuffle(categories).slice(1, getRandomInt(0, categories.length - 1)),
+    };
   });
 };
 
 module.exports = {
   name: `--generate`,
   async run(args) {
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const comments = await readContent(FILE_COMMENTS_PATH);
+    const sentences = await readContentFile(FILE_SENTENCES_PATH);
+    const titles = await readContentFile(FILE_TITLES_PATH);
+    const categories = await readContentFile(FILE_CATEGORIES_PATH);
+    const comments = await readContentFile(FILE_COMMENTS_PATH);
     const [count] = args;
     const countPublication = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
@@ -98,7 +88,7 @@ module.exports = {
     try {
       await fs.writeFile(FILE_NAME, content);
       logger.info(chalk.green(`Operation success. File created.`));
-    } catch  (err) {
+    } catch (err) {
       logger.error(chalk.red(`Can't write data to file...`));
       return process.exit(ExitCode.error);
     }

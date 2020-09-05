@@ -108,7 +108,7 @@ CREATE TABLE public.articles (
     id bigint NOT NULL,
     title character varying(200) NOT NULL,
     announce character varying(400) NOT NULL,
-    full_text character varying(1000) NOT NULL,
+    full_text character varying(8000) NOT NULL,
     picture_id bigint,
     create_date date NOT NULL,
     updated date NOT NULL
@@ -165,10 +165,10 @@ ALTER SEQUENCE public.articles_id_seq OWNED BY public.articles.id;
 
 
 --
--- Name: picturies; Type: TABLE; Schema: public; Owner: -
+-- Name: pictures; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.picturies (
+CREATE TABLE public.pictures (
     id bigint NOT NULL,
     image character varying(50) NOT NULL,
     image2x character varying(50),
@@ -177,10 +177,10 @@ CREATE TABLE public.picturies (
 
 
 --
--- Name: picturies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: pictures_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.picturies_id_seq
+CREATE SEQUENCE public.pictures_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -189,10 +189,10 @@ CREATE SEQUENCE public.picturies_id_seq
 
 
 --
--- Name: picturies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: pictures_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.picturies_id_seq OWNED BY public.picturies.id;
+ALTER SEQUENCE public.pictures_id_seq OWNED BY public.pictures.id;
 
 
 --
@@ -257,10 +257,10 @@ ALTER TABLE ONLY public.articles_categories ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
--- Name: picturies id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pictures id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.picturies ALTER COLUMN id SET DEFAULT nextval('public.picturies_id_seq'::regclass);
+ALTER TABLE ONLY public.pictures ALTER COLUMN id SET DEFAULT nextval('public.pictures_id_seq'::regclass);
 
 
 --
@@ -303,11 +303,11 @@ ALTER TABLE ONLY public.articles
 
 
 --
--- Name: picturies picturies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pictures pictures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.picturies
-    ADD CONSTRAINT picturies_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pictures
+    ADD CONSTRAINT pictures_pkey PRIMARY KEY (id);
 
 
 --
@@ -362,10 +362,10 @@ CREATE UNIQUE INDEX u_articles_id ON public.articles USING btree (id);
 
 
 --
--- Name: u_picturies_id; Type: INDEX; Schema: public; Owner: -
+-- Name: u_pictures_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX u_picturies_id ON public.picturies USING btree (id);
+CREATE UNIQUE INDEX u_pictures_id ON public.pictures USING btree (id);
 
 
 --
@@ -418,7 +418,7 @@ ALTER TABLE ONLY public.articles_categories
 --
 
 ALTER TABLE ONLY public.articles
-    ADD CONSTRAINT fk_articles_picture_id FOREIGN KEY (picture_id) REFERENCES public.picturies(id);
+    ADD CONSTRAINT fk_articles_picture_id FOREIGN KEY (picture_id) REFERENCES public.pictures(id);
 
 
 --
