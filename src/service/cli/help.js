@@ -1,11 +1,10 @@
 'use strict';
 const chalk = require(`chalk`);
-const {getLogger} = require(`../lib/logger`);
+const logger = require(`../lib/logger`);
 
 module.exports = {
   name: `--help`,
   run() {
-    const logger = getLogger();
     const textHelp = `
     Программа запускает http-сервер и формирует файл с данными для API.
 

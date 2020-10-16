@@ -19,14 +19,12 @@ const streams = [
   {level, stream: fs.createWriteStream(`./src/service/logs/all.log`)},
   {level: `error`, stream: fs.createWriteStream(`./src/service/logs/errors.log`)},
 ];
-const logger = pinoms({
-  name: `typoteka`,
-  level
-}, pinoms.multistream(streams));
 
-module.exports = {
-  logger,
-  getLogger(options = {}) {
-    return logger.child(options);
-  }
-};
+module.exports = ((options = {}) => {
+  const logger = pinoms({
+    name: `typoteka`,
+    level
+  }, pinoms.multistream(streams));
+
+  return logger.child(options);
+})();

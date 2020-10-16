@@ -3,12 +3,11 @@
 const chalk = require(`chalk`);
 const express = require(`express`);
 const {HttpCode, API_PREFIX} = require(`../../constants`);
-const {getLogger} = require(`../lib/logger`);
+const logger = require(`../lib/logger`);
 const routesApi = require(`../api`);
 
 const DEFAULT_PORT = 3000;
 
-const logger = getLogger();
 
 const initServer = async () => {
   const app = express();

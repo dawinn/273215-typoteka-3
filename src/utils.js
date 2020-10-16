@@ -1,5 +1,5 @@
 'use strict';
-const {getLogger} = require(`./service/lib/logger`);
+const logger = require(`./service/lib/logger`);
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 
@@ -46,7 +46,6 @@ const getRandomDate = (deadline) => {
 };
 
 const readContentFile = async (filePath) => {
-  const logger = getLogger();
   try {
     const content = await fs.readFile(filePath, `utf8`);
     return content.split(`\n`).filter((str) => str.length > 0);
