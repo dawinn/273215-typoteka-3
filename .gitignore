@@ -8,6 +8,7 @@ Thumbs.db
 .vscode
 
 # Вспомогательные файлы
+.env
 *.log*
 mocks.json
 node_modules/
