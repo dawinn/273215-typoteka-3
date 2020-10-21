@@ -4,8 +4,7 @@ const fs = require(`fs`).promises;
 const FILENAME = `mocks.json`;
 let data = null;
 
-const {getLogger} = require(`../lib/logger`);
-const logger = getLogger();
+const logger = require(`../lib/logger`);
 
 const getMockData = async () => {
   if (data !== null) {

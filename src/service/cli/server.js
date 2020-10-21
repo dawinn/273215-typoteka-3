@@ -1,14 +1,14 @@
 'use strict';
 
 const chalk = require(`chalk`);
+const dbConnection = require(`../db-connect`);
 const express = require(`express`);
 const {HttpCode, API_PREFIX} = require(`../../constants`);
-const {getLogger} = require(`../lib/logger`);
+const logger = require(`../lib/logger`);
 const routesApi = require(`../api`);
 
 const DEFAULT_PORT = 3000;
 
-const logger = getLogger();
 
 const initServer = async () => {
   const app = express();
@@ -36,6 +36,7 @@ const initServer = async () => {
 const run = async (args) => {
   const [customPort] = args;
   const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
+  const db = await dbConnection.connect();
   const app = await initServer();
 
   app.listen(port, () => {
