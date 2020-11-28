@@ -1,12 +1,20 @@
 'use strict';
+const {Sequelize, Op} = require(`sequelize`);
 
 class SearchService {
   constructor(article) {
-    this._article = article;
+    this.article = article;
   }
-
-  findAll(searchText) {
-    return this._article.filter((article) => article.title.includes(searchText));
+  async findAll(searchText) {
+    const articles = await this.article.findAll({
+      where: Sequelize.where(
+          Sequelize.fn(`lower`, Sequelize.col(`title`)),
+          {
+            [Op.like]: `%${searchText.toLowerCase()}%`
+          }
+      )
+    });
+    return articles;
   }
 
 }

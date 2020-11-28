@@ -1,36 +1,39 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../constants`);
+const {
+  Comment,
+} = require(`../models`);
+const {dateFormat} = require(`../../utils`);
 
 class CommentService {
-  create(article, comment) {
-    const newComment = Object.assign({
-      id: nanoid(MAX_ID_LENGTH),
-    }, comment);
 
-    article.comments.push(newComment);
-    return newComment;
+  async create(articleId, comment) {
+    const newComment = await Comment.create({
+      text: comment.text,
+      created: dateFormat(new Date(), `%Y-%m-%d %H:%M:%S`),
+      userId: comment.userId,
+      articleId,
+    });
+    return newComment.toJSON();
   }
 
-  drop(article, commentId) {
-    const dropComment = article.comments
-    .find((item) => item.id === commentId);
+  async drop(commentId) {
+    const deletedCommentsCount = await Comment.destroy({
+      where: {commentId}
+    });
 
-    if (!dropComment) {
-      return null;
-    }
-
-    article.comments = article.comments
-    .filter((item) => item.id !== commentId);
-
-    return dropComment;
+    return !!deletedCommentsCount;
   }
 
-  findAll(article) {
-    return article.comments;
+  async findAll(article) {
+    const comments = await Comment.findAll({
+      where: {
+        articleId: article
+      },
+      raw: true
+    });
+    return comments;
   }
-
 }
 
 module.exports = CommentService;

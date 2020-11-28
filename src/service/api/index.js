@@ -16,12 +16,10 @@ const category = require(`./category`);
 
 const initRouter = async () => {
   const app = new Router();
-  const getMockData = require(`../lib/get-mock-data`);
-  const mockData = await getMockData();
 
-  category(app, new CategoryService(mockData));
-  search(app, new SearchService(mockData));
-  article(app, new ArticleService(mockData), new CommentService());
+  category(app, new CategoryService());
+  search(app, new SearchService());
+  article(app, new ArticleService(), new CommentService());
 
   return app;
 };

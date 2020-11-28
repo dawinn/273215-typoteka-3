@@ -9,16 +9,13 @@ const routesApi = require(`../api`);
 
 const DEFAULT_PORT = 3000;
 
-
 const initServer = async () => {
   const app = express();
   const routes = await routesApi();
-
   app.use(express.json());
-  app.use(API_PREFIX, routes);
 
   app.use((req, res, next) => {
-    logger.debug(`Start request to url ${req.url}`);
+    logger.debug(`Start request to url ${req.url}, метод ${req.method}`);
     res.on(`finish`, () => {
       logger.info(`Response status code: ${res.statusCode}`);
     });
@@ -26,9 +23,15 @@ const initServer = async () => {
     next();
   });
 
-  app.use((req, res) => res
-  .status(HttpCode.NOT_FOUND)
-  .send(`Not found`));
+  app.use(API_PREFIX, routes);
+
+  app.use((req, res) => {
+    res.status(HttpCode.NOT_FOUND)
+    .send(`Not found!`);
+
+    // Записываем, что запрос закончился неудачей
+    logger.error(`End request with error ${res.statusCode}`);
+  });
 
   return app;
 };
