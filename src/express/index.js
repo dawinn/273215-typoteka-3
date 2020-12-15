@@ -26,24 +26,24 @@ app.set(`view engine`, `pug`);
 app.get(`/`, async (req, res) => {
   /*  получение данных */
   const categoriesData = await getData(`/api/categories`);
-  const categories = categoriesData.map(item => ({
+  const categories = categoriesData.map((item) => ({
     item,
     count: 13
   }));
 
   const articles = await getData(`/api/articles`);
 
-  const populars = articles.map(item => ({
+  const populars = articles.map((item) => ({
     id: item.id,
     text: item.announce,
     count: item.comments.length,
   }));
   populars.length = 2;
 
-  const lastComments = {};//await getData(`/api/offers`);
+  const lastComments = {};
   lastComments.length = 4;
 
-  articles.length = 6;
+  articles.length = articles.length > 4 ? 4 : articles.length;
   res.render(`main`, {categories, articles, populars, lastComments});
 });
 
@@ -54,7 +54,7 @@ app.get(`/search`, async (req, res) => {
   let searchResult = [];
   if (req.query.query) {
     const searchResultData = await getData(`/api${req.url}`);
-    searchResult = searchResultData && searchResultData.map(item => ({
+    searchResult = searchResultData && searchResultData.map((item) => ({
       id: item.id,
       title: item.title.replace(req.query.query, `<b>${req.query.query}</b>`),
       dateTime: dateFormat(Date.parse(item.createdDate), `%Y-%m-%dT%H:%M`),

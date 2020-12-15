@@ -1,49 +1,139 @@
 'use strict';
+const logger = require(`../lib/logger`);
+const {dateFormat} = require(`../../utils`);
 
+const {Op} = require(`sequelize`);
 const {
-  MAX_ID_LENGTH,
-} = require(`../../constants`);
+  Category,
+  Comment,
+  Article,
+  Picture,
+} = require(`../models`);
 
-const {nanoid} = require(`nanoid`);
+const articleOptions = {
+  include: [
+    {
+      model: Comment,
+      as: `comments`
+    },
+    {
+      model: Picture,
+      as: `picture`
+    }]
+};
 
 class ArticleService {
-  constructor(articles) {
-    this._articles = articles;
+
+  async create(article) {
+    try {
+      const newArticle = await Article.create({
+        title: article.title,
+        announce: article.announce,
+        fullText: article.fullText,
+        createDate: dateFormat(new Date(), `%Y-%m-%d`),
+        updated: dateFormat(new Date(), `%Y-%m-%d`),
+        picture: article.picture,
+      }, {
+        include: [{
+          association: Article.Picture,
+        }]
+      });
+
+      const categories = await Category.findAll({
+        where: {
+          name: {
+            [Op.in]: article.category
+          }
+        }
+      });
+      await newArticle.addCategories(categories);
+      return newArticle.toJSON();
+
+    } catch (error) {
+      logger.error(`Error when creating article ${error}`);
+      return {};
+    }
   }
 
-  create(article) {
-    const newArticle = Object
-    .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, article);
+  async drop(id) {
+    const deletedArticlesCount = await Article.destroy({
+      where: {id}
+    });
 
-    this._articles.push(newArticle);
-    return newArticle;
+    return !!deletedArticlesCount;
   }
 
-  drop(id) {
-    const articleIndex = this._articles.findIndex((item) => item.id === id);
-
-    if (!~articleIndex) {
-      return null;
+  async findAll(options) {
+    const articles = await Article.findAll({...articleOptions, ...options});
+    if (!articles) {
+      return [];
     }
 
-    return this._articles.splice(articleIndex, 1);
+    const list = await Promise.all(articles.map(async (article) => {
+      const category = await getCategoriesList(article);
+      return {
+        ...article.toJSON(),
+        category,
+      };
+    }));
+
+    return list;
   }
 
-  findAll() {
-    return this._articles;
+  async findOne(id) {
+    const article = await Article.findByPk(id, articleOptions);
+    const category = await getCategoriesList(article);
+    return {
+      ...article.toJSON(),
+      category,
+    };
   }
 
-  findOne(id) {
-    return this._articles.find((item) => item.id === id);
+  async update(id, article) {
+    try {
+      const updateArticle = await Article.findByPk(id, {raw: true});
+      const currentPicture = await Article.findByPk(updateArticle.pictureId, {raw: true});
+      const isSamePicture = Object.entries(article.picture).every((key, value) => value === currentPicture[key]);
+
+      if (!isSamePicture) {
+        /* загрузили новую картинку */
+        updateArticle.pictureId = await createPicture(article.picture);
+      }
+
+      updateArticle.title = article.title;
+      updateArticle.announce = article.announce;
+      updateArticle.fullText = article.fullText;
+      updateArticle.updated = dateFormat(new Date(), `%Y-%m-%d %H:%M:%S`);
+
+      return await updateArticle.save();
+    } catch (error) {
+      logger.error(`Error when creating article ${error}`);
+      return {};
+    }
   }
 
-  update(id, article) {
-    const oldArticle = this._articles
-    .find((item) => item.id === id);
+}
+/* дополнительные функции */
+async function createPicture(picture) {
+  const newObject = await Picture.create({
+    image: picture.image,
+    image2x: picture.image2x,
+    background: picture.background,
+  }, {raw: true});
+  return newObject.toJSON();
+}
 
-    return Object.assign(oldArticle, article);
+async function getCategoriesList(article) {
+  try {
+    const categories = await article.getCategories({raw: true});
+    return categories.reduce((categoryList, category) => {
+      categoryList.push(category.name);
+      return categoryList;
+    }, []);
+  } catch (error) {
+    logger.error(`Error when creating offer ${error}`);
+    return {};
   }
-
 }
 
 module.exports = ArticleService;

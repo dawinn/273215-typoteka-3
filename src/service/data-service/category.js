@@ -1,17 +1,12 @@
 'use strict';
 
+const {Category} = require(`../models`);
+
 class CategoryService {
-  constructor(articles) {
-    this._articles = articles;
-  }
-
-  findAll() {
-    const categories = this._articles.reduce((acc, article) => {
-      article.category.forEach((item) => acc.add(item));
-      return acc;
-    }, new Set());
-
-    return [...categories];
+  /* todo сделать с выводом ID */
+  async findAll() {
+    const categories = await Category.findAll({raw: true});
+    return categories;
   }
 }
 

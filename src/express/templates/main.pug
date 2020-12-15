@@ -23,7 +23,7 @@ block content
         ul.hot__list
           each item in populars
             li.hot__list-item
-              a.hot__list-link(href= '/articles/' + item.id)= item.text
+              a.hot__list-link(href= `/articles/${item.id}`)= item.text
                 |
                 sup.hot__link-sup= item.count
       section.main-page__last.last
