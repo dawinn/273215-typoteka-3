@@ -29,3 +29,9 @@ module.exports.PictureRestrict = {
   MIN: 1,
   MAX: 16,
 };
+
+module.exports.PageSettings = {
+  DEFAULT: 1,
+  MAX_ELEMENT: 4,
+  LIMIT_PAGINATE: 5,
+}

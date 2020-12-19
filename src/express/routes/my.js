@@ -5,7 +5,7 @@ const {getData} = require(`../request`);
 const {dateFormat} = require(`../../utils`);
 
 myRouter.get(`/`, async (req, res) => {
-  const myNotesData = await getData(`/api/articles`);
+  const {articles: myNotesData, ...paginationData} = await getData(`/api/articles`);
   const myNotes = myNotesData.map((item) => ({
     id: item.id,
     text: item.announce,
@@ -13,7 +13,7 @@ myRouter.get(`/`, async (req, res) => {
     dateView: dateFormat(Date.parse(item.createdDate), `%d.%m.%Y, %H:%M`),
   }));
 
-  res.render(`my`, {isNavBurger: true, myNotes});
+  res.render(`my`, {isNavBurger: true, myNotes, ...paginationData});
 });
 
 myRouter.get(`/comments`, async (req, res) => {

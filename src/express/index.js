@@ -31,20 +31,24 @@ app.get(`/`, async (req, res) => {
     count: 13
   }));
 
-  const articles = await getData(`/api/articles`);
+  const {articles} = await getData(`/api/articles/?limit=4`);
 
-  const populars = articles.map((item) => ({
+  const {articles: popList} = await getData(`/api/articles/?limit=2`);
+  const populars = popList.map((item) => ({
     id: item.id,
     text: item.announce,
     count: item.comments.length,
   }));
-  populars.length = 2;
 
   const lastComments = {};
   lastComments.length = 4;
 
-  articles.length = articles.length > 4 ? 4 : articles.length;
-  res.render(`main`, {categories, articles, populars, lastComments});
+  res.render(`main`, {
+    categories,
+    articles,
+    populars,
+    lastComments
+  });
 });
 
 app.get(`/categories`, (req, res) => res.render(`all-categories`, {isNavBurger: true}));

@@ -1,6 +1,7 @@
 'use strict';
 const logger = require(`../lib/logger`);
 const {dateFormat} = require(`../../utils`);
+const paginate = require(`../lib/paginator`);
 
 const {Op} = require(`sequelize`);
 const {
@@ -64,7 +65,8 @@ class ArticleService {
   }
 
   async findAll(options) {
-    const articles = await Article.findAll({...articleOptions, ...options});
+    const {page, limit, ...otherOptions} = options;
+    const {data: articles, ...result} = await paginate(Article, {...articleOptions, ...otherOptions}, page, limit);
     if (!articles) {
       return [];
     }
@@ -77,7 +79,10 @@ class ArticleService {
       };
     }));
 
-    return list;
+    return {
+      ...result,
+      articles: list,
+    };
   }
 
   async findOne(id) {
