@@ -10,4 +10,14 @@ block content
             a.notes__item-text(href= '/articles/' + note.id)= note.text
             button.notes__button.button.button--close-item(type='button')
               span.visually-hidden Закрыть строку списка
-
+      .pagination-wrapper
+        ul.pagination
+          each page in pageList
+            li
+              if page === currentPage
+                a.active= page
+              else
+                a(href=`/?page=${page}`)= page
+          if nextPage
+            li
+               a(href=`/?page=${nextPage}`) дальше

@@ -12,8 +12,10 @@ module.exports = (app, articleService, commentService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const articles = await articleService.findAll();
-    res.status(HttpCode.OK).json(articles);
+    const page = +req.query.page;
+    const limit = +req.query.limit;
+    const data = await articleService.findAll({page, limit});
+    res.status(HttpCode.OK).json(data);
   });
 
   route.get(`/:articleId`, async (req, res) => {
