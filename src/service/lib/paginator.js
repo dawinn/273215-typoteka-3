@@ -48,12 +48,10 @@ const getPreviousPage = (page) => {
 };
 
 const getPageIndexList = (currentPage, countPage, totalPage) => {
+  currentPage = currentPage < 1 ? 1 : currentPage;
   let indexList = [currentPage];
-  if (currentPage >= totalPage) {
-    return indexList;
-  }
-
-  let remain = (countPage <= totalPage ? currentPage : totalPage) - 1;
+  let remain = currentPage > totalPage ? currentPage : totalPage;
+  remain = (countPage <= remain ? countPage : remain) - 1;
   for (let i = 1; remain > 0; i++) {
     if (currentPage + i <= totalPage) {
       indexList.push(currentPage + i);

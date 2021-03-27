@@ -8,24 +8,29 @@ block content
             h1= article.id ? 'Редактирование публикации' : 'Новая публикация'
             .new-publication__date-form
               h3 Дата публикации
-              form(action= (article.id ? ('/articles/edit/' + article.id) : '/articles/add') method='POST' )
+              form
                 .new-publication__date-block
                   label(for='new-publication-date' aria-label='Календарь')
-                  input#new-publication-date(type='text' name='createdDate' placeholder='21.03.2019' value= article.createdDate form='editArticle')
+                  input#new-publication-date(type='date' name='createdDate' placeholder='21.03.2019' value= article.createDate
+                  form='editArticle')
+                  if errors.createdDate
+                    .form__error-message= errors.createdDate
             button.new-publication__button.button.button--colored(type='submit' form='editArticle') Опубликовать
           button.popup__button.button.button--popup-close(type='button' aria-label='Закрыть окно') Закрыть окно
           .new-publication__form.form
-            form(action= (article.id ? ('/articles/edit/' + article.id) : '/articles/add') method='POST' id='editArticle')
+            form(action= (article.id ? (`/articles/edit/${article.id}`) : '/articles/add') method='POST' id='editArticle' enctype='multipart/form-data')
               .form__wrapper.form__wrapper--intro
-                .form__field
+                div(class= `form__field ${errors.title ? 'form__validation-error' : ''}`)
                   label
                     input(type='text' placeholder='Заголовок' required name='title' value= article.title)
+                  if errors.title
+                    span.form__error-message= errors.title
                 .form__field.form__field--post-image
                   label
                     input#image-name-field(type='text' placeholder='Фотография' name='picture' readonly value= (article.id ? '/img/' + article.picture.image : ''))
                   .form__image-loader.form__image-loader--publication
                     label
-                      input.visually-hidden(type='file')
+                      input.visually-hidden(type='file' name='loadFile' value= article.loadFile)
                       | Обзор
                   button.button.button--transparent Удалить
                 each category in categories
@@ -34,10 +39,20 @@ block content
                     label(for= `category-${category.id}`)= category.name
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
-                .form__field.form__field--publication-text
+                div(class= `form__field form__field--publication-text ${errors.announce ? 'form__validation-error' : ''}`)
                   label
                     textarea(rows='2' placeholder='Анонс публикации' name='announce')= article.announce
-                .form__field.form__field--publication-text
+                  if errors.announce
+                    span.form__error-message= errors.announce
+                div(class= `form__field form__field--publication-text ${errors.fullText ? 'form__validation-error' : ''}`)
                   label
                     textarea(rows='10' placeholder='Полный текст публикации' name='fullText')= article.fullText
+                  if errors.fullText
+                    span.form__error-message= errors.fullText
+            if Object.keys(errors).length !== 0
+              .form__validation-error
+                p.form__error-message  При добавлении статьи произошли ошибки:
+                  ul.form__errors
+                    each error in errors
+                      li.form__error= error
       .modal__overlay

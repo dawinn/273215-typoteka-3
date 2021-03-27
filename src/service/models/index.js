@@ -13,6 +13,7 @@ const model = () => {
     as: `categories`,
     foreignKey: `article_id`,
     timestamps: false,
+    onDelete: `CASCADE`,
   });
 
   Category.belongsToMany(Article, {
@@ -20,36 +21,38 @@ const model = () => {
     as: `articles`,
     foreignKey: `category_id`,
     timestamps: false,
+    onDelete: `CASCADE`,
   });
 
   Article.Picture = Article.belongsTo(Picture, {
     foreignKey: `picture_id`,
-    as: `picture`
+    as: `picture`,
   });
 
   Picture.hasMany(Article, {
     foreignKey: `picture_id`,
-    as: `picture`
+    as: `picture`,
   });
 
   Comment.belongsTo(Article, {
     foreignKey: `article_id`,
-    as: `comments`
+    as: `comments`,
+    onDelete: `CASCADE`,
   });
 
   Article.hasMany(Comment, {
     foreignKey: `article_id`,
-    as: `comments`
+    as: `comments`,
   });
 
   Comment.belongsTo(User, {
     foreignKey: `user_id`,
-    as: `comment_user`
+    as: `comment_user`,
   });
 
   User.hasMany(Comment, {
     foreignKey: `user_id`,
-    as: `comment_user`
+    as: `comment_user`,
   });
 
 

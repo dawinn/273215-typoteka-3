@@ -27,7 +27,7 @@ app.get(`/`, async (req, res) => {
   /*  получение данных */
   const categoriesData = await getData(`/api/categories`);
   const categories = categoriesData.map((item) => ({
-    item,
+    ...item,
     count: 13
   }));
 
@@ -57,14 +57,14 @@ app.get(`/login`, (req, res) => res.render(`login`));
 app.get(`/search`, async (req, res) => {
   let searchResult = [];
   if (req.query.query) {
-    const searchResultData = await getData(`/api${req.url}`);
+    const {searchResult: searchResultData} = await getData(`/api${req.url}`);
     searchResult = searchResultData && searchResultData.map((item) => ({
       id: item.id,
       title: item.title.replace(req.query.query, `<b>${req.query.query}</b>`),
-      dateTime: dateFormat(Date.parse(item.createdDate), `%Y-%m-%dT%H:%M`),
-      dateView: dateFormat(Date.parse(item.createdDate), `%d.%m.%Y, %H:%M`),
+      dateTime: dateFormat(Date.parse(item.createDate), `%Y-%m-%dT%H:%M`),
+      dateView: dateFormat(Date.parse(item.createDate), `%d.%m.%Y, %H:%M`),
     }));
   }
-
+ console.log(`searchResult`, searchResult);
   res.render(`search`, {isNavBurger: true, query: req.query.query, searchResult: searchResult || []});
 });

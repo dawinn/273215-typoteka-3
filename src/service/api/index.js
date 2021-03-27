@@ -16,10 +16,11 @@ const category = require(`./category`);
 
 const initRouter = async () => {
   const app = new Router();
+  const articleService = new ArticleService();
 
   category(app, new CategoryService());
-  search(app, new SearchService());
-  article(app, new ArticleService(), new CommentService());
+  search(app, new SearchService(articleService));
+  article(app, articleService, new CommentService());
 
   return app;
 };

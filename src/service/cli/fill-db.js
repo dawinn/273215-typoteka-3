@@ -57,11 +57,7 @@ const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
 const getPictureFileName = (number) => {
   const numWithLead0 = `${printNumWithLead0(number)}`;
-  return {
-    background: numWithLead0,
-    image: `item${numWithLead0}.jpg`,
-    image2x: `item${numWithLead0}@2x.jpg`
-  };
+  return `item${numWithLead0}.jpg`;
 };
 
 const generateData = (count, titles, categories, sentences, comments) => {

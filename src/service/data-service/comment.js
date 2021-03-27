@@ -4,6 +4,7 @@ const {
   Comment,
 } = require(`../models`);
 const {dateFormat} = require(`../../utils`);
+const {Op} = require(`sequelize`);
 
 class CommentService {
 
@@ -17,9 +18,18 @@ class CommentService {
     return newComment.toJSON();
   }
 
-  async drop(commentId) {
+  async drop(articleId, commentId) {
     const deletedCommentsCount = await Comment.destroy({
-      where: {commentId}
+      where: {
+        [Op.and]: [
+          {
+            id: commentId
+          },
+          {
+            articleId
+          }
+        ]
+      }
     });
 
     return !!deletedCommentsCount;

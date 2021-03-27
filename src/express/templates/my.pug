@@ -17,7 +17,7 @@ block content
               if page === currentPage
                 a.active= page
               else
-                a(href=`/?page=${page}`)= page
+                a(href=`/my/?page=${page}`)= page
           if nextPage
             li
-               a(href=`/?page=${nextPage}`) дальше
+               a(href=`/my/?page=${nextPage}`) дальше

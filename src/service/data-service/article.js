@@ -27,13 +27,20 @@ class ArticleService {
 
   async create(article) {
     try {
+      const picture = await createPicture({
+        /* с веба приходит только строка с именем файла */
+        image: article.picture,
+        image2x: article.picture,
+        background: `2`,
+      });
+
       const newArticle = await Article.create({
         title: article.title,
         announce: article.announce,
         fullText: article.fullText,
         createDate: dateFormat(new Date(), `%Y-%m-%d`),
         updated: dateFormat(new Date(), `%Y-%m-%d`),
-        picture: article.picture,
+        pictureId: picture.id,
       }, {
         include: [{
           association: Article.Picture,
@@ -43,7 +50,7 @@ class ArticleService {
       const categories = await Category.findAll({
         where: {
           name: {
-            [Op.in]: article.category
+            [Op.in]: article.category.map((item) => item.name)
           }
         }
       });
@@ -58,7 +65,8 @@ class ArticleService {
 
   async drop(id) {
     const deletedArticlesCount = await Article.destroy({
-      where: {id}
+      where: {id},
+      cascade: true,
     });
 
     return !!deletedArticlesCount;
@@ -87,20 +95,24 @@ class ArticleService {
 
   async findOne(id) {
     const article = await Article.findByPk(id, articleOptions);
-    const category = await getCategoriesList(article);
+
+    if (!article) {
+      return null;
+    }
+
+    const categories = await article.getCategories({raw: true});
+    // const category = await getCategoriesList(article);
     return {
       ...article.toJSON(),
-      category,
+      categories,
     };
   }
 
   async update(id, article) {
     try {
-      const updateArticle = await Article.findByPk(id, {raw: true});
-      const currentPicture = await Article.findByPk(updateArticle.pictureId, {raw: true});
-      const isSamePicture = Object.entries(article.picture).every((key, value) => value === currentPicture[key]);
+      const updateArticle = await Article.findByPk(id);
 
-      if (!isSamePicture) {
+      if (article.picture) {
         /* загрузили новую картинку */
         updateArticle.pictureId = await createPicture(article.picture);
       }
@@ -113,7 +125,7 @@ class ArticleService {
       return await updateArticle.save();
     } catch (error) {
       logger.error(`Error when creating article ${error}`);
-      return {};
+      return false;
     }
   }
 
@@ -136,7 +148,7 @@ async function getCategoriesList(article) {
       return categoryList;
     }, []);
   } catch (error) {
-    logger.error(`Error when creating offer ${error}`);
+    logger.error(`Error when creating article ${error}`);
     return {};
   }
 }

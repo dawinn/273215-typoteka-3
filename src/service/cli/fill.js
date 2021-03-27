@@ -116,6 +116,7 @@ const generateFillTableScript = (tableName, data) => {
   return `
 insert into ${tableName}(${Object.keys(data[0]).join(`,`)}) values
 ${data.map((row) => `(${Object.values(row).map((v) => `'${v}'`).join(`,`)})`).join(`,`)};
+alter sequence public.${tableName}_id_seq restart with ${data.length + 1};
  `;
 };
 module.exports = {
