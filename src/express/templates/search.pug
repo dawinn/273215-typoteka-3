@@ -16,4 +16,4 @@ block content
             each article in searchResult
               .search__result
                 time.search__date(datetime= article.dateTime)= article.dateView
-                a.search__link !{article.title}
+                a.search__link(href= `/articles/${article.id}`) !{article.title}

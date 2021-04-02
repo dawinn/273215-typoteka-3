@@ -2,9 +2,11 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../constants`);
-const articleValidator = require(`../middlewares/article-validator`);
+const schemas = require(`../middlewares/schemas-validate`);
 const articleExist = require(`../middlewares/article-exist`);
-const commentValidator = require(`../middlewares/comment-validator`);
+const articleValidator = require(`../middlewares/schemas-validator`)(schemas.article);
+const commentValidator = require(`../middlewares/schemas-validator`)(schemas.comment);
+const paramValidator = require(`../middlewares/param-validator`);
 
 module.exports = (app, articleService, commentService) => {
   const route = new Router();
@@ -18,7 +20,7 @@ module.exports = (app, articleService, commentService) => {
     res.status(HttpCode.OK).json(data);
   });
 
-  route.get(`/:articleId`, async (req, res) => {
+  route.get(`/:articleId`, paramValidator(`articleId`), async (req, res) => {
     const {articleId} = req.params;
     const article = await articleService.findOne(articleId);
 
@@ -38,9 +40,9 @@ module.exports = (app, articleService, commentService) => {
     .json(article);
   });
 
-  route.put(`/:articleId`, articleValidator, async (req, res) => {
+  route.put(`/:articleId`, [paramValidator(`articleId`), articleValidator], async (req, res) => {
     const {articleId} = req.params;
-    const [countUpdatedArticle] = await articleService.update(articleId, req.body);
+    const countUpdatedArticle = await articleService.update(articleId, req.body);
 
     if (!countUpdatedArticle) {
       return res.status(HttpCode.NOT_FOUND)
@@ -51,7 +53,7 @@ module.exports = (app, articleService, commentService) => {
     .json(countUpdatedArticle);
   });
 
-  route.delete(`/:articleId`, async (req, res) => {
+  route.delete(`/:articleId`, paramValidator(`articleId`), async (req, res) => {
     const {articleId} = req.params;
     const article = await articleService.drop(articleId);
 
@@ -64,19 +66,19 @@ module.exports = (app, articleService, commentService) => {
     .json(article);
   });
 
-  route.get(`/:articleId/comments`, articleExist(articleService), async (req, res) => {
+  route.get(`/:articleId/comments`, [paramValidator(`articleId`), articleExist(articleService)], async (req, res) => {
     const {article} = res.locals;
-    const comments = await commentService.findAll(article);
+    const comments = await commentService.findAll(article.id);
 
     res.status(HttpCode.OK)
     .json(comments);
 
   });
 
-  route.delete(`/:articleId/comments/:commentId`, articleExist(articleService), (req, res) => {
+  route.delete(`/:articleId/comments/:commentId`, [paramValidator(`articleId`), paramValidator(`commentId`), articleExist(articleService)], async (req, res) => {
     const {article} = res.locals;
     const {commentId} = req.params;
-    const deletedComment = commentService.drop(article, commentId);
+    const deletedComment = await commentService.drop(article.id, commentId);
 
     if (!deletedComment) {
       return res.status(HttpCode.NOT_FOUND)
@@ -87,10 +89,11 @@ module.exports = (app, articleService, commentService) => {
     .json(deletedComment);
   });
 
-  route.post(`/:articleId/comments`, [articleExist(articleService), commentValidator], (req, res) => {
+  route.post(`/:articleId/comments`, [paramValidator(`articleId`), articleExist(articleService), commentValidator], async (req, res) => {
     const {article} = res.locals;
     // todo задавать пользователя
-    const comment = commentService.create(article, {text: req.body});
+    const {text} = req.body;
+    const comment = await commentService.create(article.id, {text, userId: 1});
 
     return res.status(HttpCode.CREATED)
     .json(comment);

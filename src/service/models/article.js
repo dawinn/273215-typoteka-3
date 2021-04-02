@@ -20,14 +20,14 @@ module.exports = (sequelize) => {
       field: `full_text`,
       allowNull: false,
     },
-    // pictureId: {
-    //   type: DataTypes.INTEGER,
-    //   field: `picture_id`,
-    //   reference: {
-    //     model: Picture,
-    //     key: `id`
-    //   }
-    // },
+    pictureId: {
+      type: DataTypes.INTEGER,
+      field: `picture_id`,
+      reference: {
+        model: Picture,
+        key: `id`
+      }
+    },
     createDate: {
       type: DataTypes.DATE,
       field: `create_date`,

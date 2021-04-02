@@ -394,7 +394,7 @@ ALTER TABLE ONLY public.comments
 --
 
 ALTER TABLE ONLY public.comments
-    ADD CONSTRAINT fk_comments_article FOREIGN KEY (article_id) REFERENCES public.articles(id);
+    ADD CONSTRAINT fk_comments_article FOREIGN KEY (article_id) REFERENCES public.articles(id) ON DELETE CASCADE;
 
 
 --
@@ -402,7 +402,7 @@ ALTER TABLE ONLY public.comments
 --
 
 ALTER TABLE ONLY public.articles_categories
-    ADD CONSTRAINT fk_articles_categories_category FOREIGN KEY (category_id) REFERENCES public.categories(id);
+    ADD CONSTRAINT fk_articles_categories_category FOREIGN KEY (category_id) REFERENCES public.categories(id) ON DELETE CASCADE;
 
 
 --
@@ -410,7 +410,7 @@ ALTER TABLE ONLY public.articles_categories
 --
 
 ALTER TABLE ONLY public.articles_categories
-    ADD CONSTRAINT fk_articles_categories_article FOREIGN KEY (article_id) REFERENCES public.articles(id);
+    ADD CONSTRAINT fk_articles_categories_article FOREIGN KEY (article_id) REFERENCES public.articles(id) ON DELETE CASCADE;
 
 
 --
