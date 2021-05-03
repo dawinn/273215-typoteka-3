@@ -20,6 +20,7 @@ module.exports = (sequelize) => {
     },
     surname: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     avatar: {
       type: DataTypes.STRING,

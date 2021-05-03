@@ -7,35 +7,41 @@ block content
         button.popup__button.button.button--popup-close(type='button' aria-label='Закрыть окно') Закрыть окно
         h2.visually-hidden Форма регистрации
         ul.popup__tabs
-          li.popup__tab.popup__tab--active.popup__tab--register
+          li(class= `popup__tab popup__tab--register ${isLogin ? '' : 'popup__tab--active'}`)
             button.popup__tab-switcher.button(type='button') Регистрация
-          li.popup__tab.popup__tab--log-in
+          li(class= `popup__tab popup__tab--log-in ${isLogin ? 'popup__tab--active' : ''}`)
             button.popup__tab-switcher.button(type='button') Войти
-        .popup__form.popup__form--active.form.form--register
-          form(action='#' method='get')
+        div(class=`popup__form form form--register ${isLogin ? 'popup__form--hidden' : 'popup__form--active'}`)
+          form(action='/register' method='post' enctype='multipart/form-data')
             .form__field
               label
-                input(type='email' placeholder='Электронная почта' required)
+                input(type='email' placeholder='Электронная почта' name='userEmail' value= userEmail required)
             .form__field
               label
-                input(type='text' placeholder='Имя' required)
+                input(type='text' placeholder='Имя' name='userName' value= userName required)
             .form__field
               label
-                input(type='text' placeholder='Фамилия')
+                input(type='text' placeholder='Фамилия' name='userSurname' value= userSurname required)
             .form__field
               label
-                input(type='password' placeholder='Пароль' required)
+                input(type='password' placeholder='Пароль' name='userPassword' value= userPassword required)
             .form__field
               label
-                input(type='password' placeholder='Повтор пароля' required)
+                input(type='password' placeholder='Повтор пароля' name='userPasswordAgain' value= userPasswordAgain required)
             .form__image-loader
               a.form__avatar.avatar
                 img(src='/img/icons/smile.svg' alt='аватар пользователя')
               label
-                input.visually-hidden(type='file')
+                input.visually-hidden(type='file' name='avatar' value= avatar)
                 | Загрузить фото профиля
             button.form__submit-btn.form__submit-btn--register.button.button--colored(type='submit') Зарегистрироваться
-        .popup__form.popup__form--hidden.form.form--log-in
+          if Object.keys(errors).length !== 0
+            .form__validation-error
+              p.form__error-message  При регистрации произошли ошибки:
+                ul.form__errors
+                  each error in errors
+                    li.form__error= error
+        div(class=`popup__form form form--log-in ${isLogin ? 'popup__form--active' : 'popup__form--hidden'}`)
           form(action='#' method='get')
             .form__field
               label
@@ -45,3 +51,5 @@ block content
                 input(type='password' placeholder='Пароль' required)
             button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти
       .modal__overlay
+  script(src='/js/vendor.js')
+  script(src='/js/main.js')
