@@ -204,7 +204,7 @@ CREATE TABLE public.users (
     email character varying(100) NOT NULL,
     password character varying NOT NULL,
     name character varying(100) NOT NULL,
-    surname character varying(100),
+    surname character varying(100) NOT NULL,
     avatar character varying(50)
 );
 

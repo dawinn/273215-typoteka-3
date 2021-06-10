@@ -41,7 +41,7 @@ module.exports = Joi.object({
 
   createdDate: Joi.date()
   .label(`Дата публикации`)
-  .message(`должна быть валидной`),
+  .messages({'date.base': `должна быть валидной`}),
 
   category: Joi.array().items(Joi.object({
     id: Joi.number(),
