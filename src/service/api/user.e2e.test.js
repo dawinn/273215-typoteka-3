@@ -6,6 +6,7 @@ const {nanoid} = require(`nanoid`);
 const {HttpCode} = require(`../../constants`);
 
 let server;
+let commonUserData;
 
 const getNewUserData = () => ({
   name: `Абдурахман`,
@@ -41,7 +42,7 @@ describe(`User API end-to-end tests`, () => {
     expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
   });
 
-  test(`Try register user with uncorrect data, code should be 400`, async () => {
+  test(`Try register user with incorrect data, code should be 400`, async () => {
     const userData = {
       ...getNewUserData(),
       repeat: `OMGOMGOM`
@@ -52,5 +53,47 @@ describe(`User API end-to-end tests`, () => {
     .send(userData);
 
     expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
+  });
+});
+
+describe(`Login API end-to-end tests`, () => {
+  beforeAll(async () => {
+    commonUserData = getNewUserData();
+    await request(server)
+    .post(`/api/user/`)
+    .send(commonUserData);
+  });
+
+  test(`When correct login user, code should be 200`, async () => {
+    const res = await request(server)
+    .post(`/api/user/login`)
+    .send({
+      username: commonUserData.email,
+      password: commonUserData.password,
+    });
+
+    expect(res.statusCode).toBe(HttpCode.OK);
+  });
+
+  test(`When incorrect login user, code should be 403`, async () => {
+    const res = await request(server)
+    .post(`/api/user/login`)
+    .send({
+      username: `${nanoid(7)}@ali.com`,
+      password: commonUserData.password,
+    });
+
+    expect(res.statusCode).toBe(HttpCode.FORBIDDEN);
+  });
+
+  test(`When incorrect password user, code should be 403`, async () => {
+    const res = await request(server)
+    .post(`/api/user/login`)
+    .send({
+      username: commonUserData.email,
+      password: nanoid(6),
+    });
+
+    expect(res.statusCode).toBe(HttpCode.FORBIDDEN);
   });
 });

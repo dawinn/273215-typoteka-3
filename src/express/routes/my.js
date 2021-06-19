@@ -3,8 +3,9 @@ const {Router} = require(`express`);
 const myRouter = new Router();
 const {getData} = require(`../request`);
 const {dateFormat} = require(`../../utils`);
+const privateRoute = require(`../middlewares/private-route`);
 
-myRouter.get(`/`, async (req, res) => {
+myRouter.get(`/`, privateRoute, async (req, res) => {
   const {articles: myNotesData, ...paginationData} = await getData(`/api/articles${req.url}`);
   const myNotes = myNotesData.map((item) => ({
     id: item.id,
@@ -16,7 +17,7 @@ myRouter.get(`/`, async (req, res) => {
   res.render(`my`, {isNavBurger: true, myNotes, ...paginationData});
 });
 
-myRouter.get(`/comments`, async (req, res) => {
+myRouter.get(`/comments`, privateRoute, async (req, res) => {
   const {articles: articlesData} = await getData(`/api/articles`);
   articlesData.length = 3;
 

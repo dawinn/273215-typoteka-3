@@ -16,3 +16,4 @@ src/service/logs/
 
 # Папка с собранными файлами проекта
 build/
+/src/express/public/img/*
