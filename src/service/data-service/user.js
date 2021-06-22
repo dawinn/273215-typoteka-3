@@ -2,6 +2,7 @@
 
 const {User} = require(`../models`);
 const bCrypt = require(`bcrypt`);
+const {Sequelize} = require(`sequelize`);
 const SALT_ROUNDS = 13;
 
 class UserService {
@@ -38,13 +39,26 @@ class UserService {
       where: {email}
     });
 
+    const author = await User.findOne({
+      attributes: [
+        [Sequelize.fn(`MIN`, Sequelize.col(`id`)), `id`],
+      ],
+    });
+
     if (!user) {
       return null;
     }
 
-    return user.toJSON();
+    return {
+      ...user.toJSON(),
+      isAuthor: user.id === author.id,
+    };
+  }
+
+  async checkUser(user, password) {
+    const match = await bCrypt.compare(password, user.password);
+    return match;
   }
 }
-
 
 module.exports = UserService;

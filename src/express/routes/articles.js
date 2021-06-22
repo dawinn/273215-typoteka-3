@@ -1,11 +1,20 @@
 'use strict';
 const {Router} = require(`express`);
+const csrfProtection = require(`../middlewares/csrf-protection`);
+const bodyParser = require(`body-parser`);
+const parseForm = bodyParser.urlencoded({extended: false});
+
 const articlesRouter = new Router();
-const {getData, sendData, putData} = require(`../request`);
+const {
+  getData,
+  sendData,
+  putData
+} = require(`../request`);
 const upload = require(`../middlewares/uploader`);
+const privateRoute = require(`../middlewares/private-route`);
 const {dateFormat} = require(`../../utils`);
 
-articlesRouter.get(`/add`, async (req, res) => {
+articlesRouter.get(`/add`, [csrfProtection, privateRoute], async (req, res) => {
   const allCategories = await getData(`/api/categories`);
 
   const categories = allCategories.map((item) => {
@@ -18,7 +27,7 @@ articlesRouter.get(`/add`, async (req, res) => {
 });
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-category`));
 
-articlesRouter.get(`/edit/:id`, async (req, res) => {
+articlesRouter.get(`/edit/:id`, [csrfProtection, privateRoute], async (req, res) => {
   const article = await getData(`/api/articles/${req.params.id}`);
   const allCategories = await getData(`/api/categories`);
 
@@ -56,7 +65,12 @@ articlesRouter.post(`/:id/comments`, async (req, res) => {
   }
 });
 
-articlesRouter.post(`/add`, upload.single(`loadFile`), async (req, res) => {
+articlesRouter.post(`/add`, [
+  parseForm,
+  csrfProtection,
+  privateRoute,
+  upload.single(`loadFile`)
+], async (req, res) => {
   const article = req.body;
   const {file = {}} = req;
 
@@ -99,7 +113,12 @@ articlesRouter.post(`/add`, upload.single(`loadFile`), async (req, res) => {
   }
 });
 
-articlesRouter.post(`/edit/:id`, upload.single(`avatar`), async (req, res) => {
+articlesRouter.post(`/edit/:id`, [
+  parseForm,
+  csrfProtection,
+  privateRoute,
+  upload.single(`avatar`)
+], async (req, res) => {
   const article = req.body;
   const {file} = req;
 
