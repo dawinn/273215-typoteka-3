@@ -3,6 +3,7 @@
 const express = require(`express`);
 const helmet = require(`helmet`);
 const expressSession = require(`express-session`);
+const cookieParser = require(`cookie-parser`);
 const path = require(`path`);
 const {getData} = require(`./request`);
 const {dateFormat} = require(`../utils`);

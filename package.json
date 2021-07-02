@@ -6,10 +6,11 @@
   "scripts": {
     "test": "npm run test::rest",
     "test::rest": "jest",
-    "start": "node ./src/service/service.js",
+    "start": "concurrently 'npm:run:back-server' 'npm:run:front-server'",
+    "start-back-cli": "node ./src/service/service.js",
     "start::debug": "LOG_LEVEL=debug node ./src/service/service.js --server | ./node_modules/.bin/pino-pretty",
-    "start-front-server": "nodemon ./src/express/index.js",
-    "server": "nodemon ./src/service/service.js --server",
+    "run:front-server": "nodemon ./src/express/index.js",
+    "run:back-server": "nodemon ./src/service/service.js --server",
     "eslint": "eslint --ext .js src/"
   },
   "repository": {
@@ -31,7 +32,11 @@
     "supertest": "4.0.2"
   },
   "dependencies": {
+    "bcrypt": "5.0.1",
     "chalk": "3.0.0",
+    "concurrently": "6.2.0",
+    "cookie-parser": "1.4.5",
+    "csurf": "1.11.0",
     "dotenv": "8.2.0",
     "express": "4.17.1",
     "express-session": "1.17.2",
